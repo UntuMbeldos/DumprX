@@ -1,0 +1,52 @@
+name: Auto Firmware Dumper
+
+on:
+  workflow_dispatch:
+    inputs:
+      USER_NAME:
+        description: 'User Name in Github Account'
+        required: true
+        default: ''
+      USER_EMAIL:
+        description: 'E-mail in Github Account'
+        required: true
+        default: ''
+      FIRMWARE_URL:
+        description: 'Stock ROM Link'
+        required: true
+        default: ''
+      GITHUB_GROUP:
+        description: 'Name On Your Group In Github'
+        required: true
+        default: ''
+
+jobs:
+  dump:
+    name: Auto Firmware Dumper
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      TG_TOKEN: ${{ secrets.TG_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+    permissions: write-all
+    steps:
+
+    - name: Check Out
+      uses: actions/checkout@v4
+
+    - name: Setup
+      run: |
+        sudo apt-get install apt-utils aria2 -y
+        git clone https://github.com/akhilnarang/scripts.git -b master .sc
+        sudo bash .sc/setup/android_build_env.sh
+        sudo apt-get install python3-all-dev libtinfo6 libncurses6 libncurses-dev libncurses5-dev lsb-release lsb-base neofetch
+        bash setup.sh
+        echo "${GH_TOKEN}" >> .github_token
+        echo "${{ inputs.GITHUB_GROUP }}" >> .github_orgname
+        pip3 install twrpdtgen aospdtgen dumpyara
+
+    - name: Dump Firmware
+      run: |
+        git config --global user.name "${{ inputs.USER_NAME }}"
+        git config --global user.email "${{ inputs.USER_EMAIL }}"
+        bash dumper.sh ${{ inputs.FIRMWARE_URL }}

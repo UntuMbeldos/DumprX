@@ -32,18 +32,13 @@ jobs:
 
     - name: Setup
       run: |
-        sudo apt-get install apt-utils aria2 -y
-        git clone https://github.com/akhilnarang/scripts.git -b master .sc
-        sudo bash .sc/setup/android_build_env.sh
-        sudo apt-get install python3-all-dev libtinfo6 libncurses6 libncurses-dev libncurses5-dev lsb-release lsb-base neofetch
         git clone https://github.com/AndroidDumps/dumpyara.git && cd dumpyara
-        bash setup.sh
-        echo "${GH_TOKEN}" >> .github_token
-        pip3 install twrpdtgen aospdtgen dumpyara
+        sudo bash setup.sh
+        echo "${GH_TOKEN}" >> .githubtoken
 
     - name: Dump Firmware
       run: |
         cd dumpyara
         git config --global user.name "${{ inputs.USER_NAME }}"
         git config --global user.email "${{ inputs.USER_EMAIL }}"
-        bash dumpyara.sh ${{ inputs.FIRMWARE_URL }}
+        sudo bash dumpyara.sh ${{ inputs.FIRMWARE_URL }}

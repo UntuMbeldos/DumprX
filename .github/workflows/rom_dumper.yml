@@ -15,10 +15,6 @@ on:
         description: 'Stock ROM Link'
         required: true
         default: ''
-      GITHUB_GROUP:
-        description: 'Name On Your Group In Github'
-        required: true
-        default: ''
 
 jobs:
   dump:
@@ -40,13 +36,14 @@ jobs:
         git clone https://github.com/akhilnarang/scripts.git -b master .sc
         sudo bash .sc/setup/android_build_env.sh
         sudo apt-get install python3-all-dev libtinfo6 libncurses6 libncurses-dev libncurses5-dev lsb-release lsb-base neofetch
+        git clone https://github.com/AndroidDumps/dumpyara.git && cd dumpyara
         bash setup.sh
         echo "${GH_TOKEN}" >> .github_token
-        echo "${{ inputs.GITHUB_GROUP }}" >> .github_orgname
         pip3 install twrpdtgen aospdtgen dumpyara
 
     - name: Dump Firmware
       run: |
+        cd dumpyara
         git config --global user.name "${{ inputs.USER_NAME }}"
         git config --global user.email "${{ inputs.USER_EMAIL }}"
-        bash dumper.sh ${{ inputs.FIRMWARE_URL }}
+        bash dumpyara.sh ${{ inputs.FIRMWARE_URL }}
